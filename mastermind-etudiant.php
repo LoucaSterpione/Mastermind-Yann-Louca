@@ -65,7 +65,6 @@ while (!$valide) {
 }
     if (strlen($saisie) !== LONGUEUR_CODE) {
         echo "Erreur : Vous devez entrer exactement " . LONGUEUR_CODE . " caractères.\n";
-        continue;
     }
     
     $caractere = str_split($saisie);
@@ -73,7 +72,7 @@ while (!$valide) {
 
     foreach ($caractere as $initiale) {
         if (!in_array($initiale, $initialesCouleurs)) {
-            echo "Erreur : Le cractère '" . $initiale . "' n'est pas valide. Couleurs valides : " . implode(', ', $initialesCouleurs) . ".\n";
+            echo "Erreur : Le caractère '" . $initiale . "' n'est pas valide. Couleurs valides : " . implode(', ', $initialesCouleurs) . ".\n";
             $caractereValide = false;
             break;
         }
