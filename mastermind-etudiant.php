@@ -25,17 +25,19 @@ Objectif : Deviner la combinaison secrète de " . LONGUEUR_CODE . " pions en " .
 Couleurs disponibles : ";
 
 
-for ($i = 0; $i < count($initialesCouleurs); $i++) {
-    echo $initialesCouleurs[$i] . " (" . $emojisCouleurs[$i] . ") ";
+foreach ($initialesCouleurs as $index => $initiale) {
+    echo $initiale . " (" . $emojisCouleurs[$index] . ") ";
 }
+echo "\n================================================================\n";
 
 // ===================================================================================
 // 2. GÉNÉRATION DE LA COMBINAISON SECRÈTE
 // ===================================================================================
 
 $combinaisonSecrete = [];
+
 for ($i = 0; $i < LONGUEUR_CODE; $i++) {
-    $indexAleatoire = rand(0, count($initialesCouleurs) - 1);
+    $indexAleatoire = array_rand($initialesCouleurs);
     $combinaisonSecrete[] = $initialesCouleurs[$indexAleatoire];
 }
 
@@ -46,7 +48,7 @@ for ($i = 0; $i < LONGUEUR_CODE; $i++) {
 $victoire = false;
 // La boucle tourne tant que le joueur n'a pas gagné et que le nombre max de tentatives n'est pas atteint
 for ($tentative = 1; $tentative <= MAX_TENTATIVES; $tentative++) {
-    echo "\n---  Tentative " . $tentative . " / " . MAX_TENTATIVES . " ---\n";
+    echo "\n---  Tentative  $tentative  / " . MAX_TENTATIVES . " ---\n";
 }
 
 // -------------------------------------------------------------------------------
@@ -58,24 +60,32 @@ $valide = false;
 
 while (!$valide) {
     
-    $saisie = readline("Entrez votre proposition de 4 initiales (ex: RVBJ pour Rouge Vert Bleu Jaune) : ");
+    $saisie = readline("Entrez votre proposition  (ex: 4 initiales, RVBJ) : ");
     $saisie = strtoupper(str_replace(' ', '', $saisie)); 
 }
-    if (strlen($saisie) === LONGUEUR_CODE) {
-        echo "Erreur : Vous devez entrer exactement " . LONGUEUR_CODE . " initiales.\n";
+    if (strlen($saisie) !== LONGUEUR_CODE) {
+        echo "Erreur : Vous devez entrer exactement " . LONGUEUR_CODE . " caractères.\n";
+        continue;
     }
     
-    $proposition = str_split($saisie);
+    $caractere = str_split($saisie);
 
 
-    foreach ($proposition as $initiale) {
+    foreach ($caractere as $initiale) {
         if (!in_array($initiale, $initialesCouleurs)) {
-            echo "Erreur : L'initiale '" . $initiale . "' n'est pas valide. Couleurs valides : " . implode(', ', $initialesCouleurs) . ".\n";
-            $valide = false;
+            echo "Erreur : Le cractère '" . $initiale . "' n'est pas valide. Couleurs valides : " . implode(', ', $initialesCouleurs) . ".\n";
+            $caractereValide = false;
             break;
         }
     }
+
+if (!$caractereValide) {
+        
+    }
+
+    $proposition = str_split($saisie);
     $valide = true;
+
 
 
 // -------------------------------------------------------------------------------
@@ -97,17 +107,23 @@ $secreteTravail = $combinaisonSecrete;
 // ÉTAPE 1 : CALCUL DES BIEN PLACÉ (Clés Noires 🔑)
 // On utilise un simple "for" pour comparer position par position.
 
-for ($proposition[$i]===$secreteTravail[$i], ){
+for ($i = 0; $i < LONGUEUR_CODE; $i++) {
+    if ($proposition[$i]===$secreteTravail[$i]){
         $bienPlace++;
         $proposition[$i] = null;
         $secreteTravail[$i] = null;
     }
-
+}
 // ÉTAPE 2 : CALCUL DES MAL PLACÉ (Pions Blancs ⚪)
 // On compare les éléments non NULL restants.
 
-foreach ($proposition as $indexP => $initialeP) {
-    if ($initialeP !== null) {
+foreach ($proposition as $couleurPropre) {
+    if ($couleurPropre !== null) {
+        $indexTrouve = array_search($couleurPropre, $secreteTravail);
+        if ($indexTrouve !== false) {
+            $malPlace++;
+            $secreteTravail[$indexTrouve] = null;
+        }
     }
 }
 
@@ -118,18 +134,26 @@ foreach ($proposition as $indexP => $initialeP) {
 // Affichage de la proposition du joueur en emojis
 
 // VOTRE CODE ICI
-$affichangeProposition = '';
+$affichageProposition = '';
 foreach ($propositionAffichage as $initiale) {
-    $index = array_search($initiale, $initialesCouleurs);
-    $affichangeProposition .= $emojisCouleurs[$index];
+    $indexEmoji = array_search($initiale, $initialesCouleurs);
+    $emoji=$emojisCouleurs[$indexEmoji];
+    $affichageProposition .= $emoji . " ";
 }
 
 // Affichage des indices
 
 // VOTRE CODE ICI
-$indices = str_repeat(CLE_BIEN_PLACE, $bienPlace) . str_repeat(PION_MAL_PLACE, $malPlace);
-$affichageIndices = [$indices];
+$affichageIndices = str_repeat(CLE_BIEN_PLACE, $bienPlace) . str_repeat(PION_MAL_PLACE, $malPlace);
+echo "Votre proposition : " . $affichageProposition . "\n";
+echo "Indices : " . $affichageIndices . "\n";
 
+// Vérification de la condition de victoire
+
+if ($bienPlace === LONGUEUR_CODE) {
+    $victoire = true;
+    // Sortie de la boucle principale
+}
 
 // Fin de la boucle principale
 
@@ -142,10 +166,17 @@ $affichageIndices = [$indices];
 // VOTRE CODE ICI
 $affichageSecrete = '';
 foreach ($combinaisonSecrete as $initiale) {
-    $index = array_search($initiale, $initialesCouleurs);
-    $affichageSecrete .= $emojisCouleurs[$index];
-} if ($victoire==true) {
-    echo "\n"🎉 FÉLICITATIONS ! Vous avez trouvé la combinaison secrète en X tentatives !" . $affichageSecrete . "\n";
-} else {
-    echo "\n"😭 DOMMAGE ! Vous avez atteint la limite de 12 tentatives.". $affichageSecrete . "\n";
-}
+    $indexEmoji = array_search($initiale, $initialesCouleurs);
+    $emoji .= $emojisCouleurs[$indexEmoji];
+    $affichageSecrete .= $emoji . " ";
+
+echo "\n================================================================\n";
+
+} if ($victoire) {
+    echo "🎉 FÉLICITATIONS ! Vous avez trouvé la combinaison secrète en  $tentatives tentatives !". "\n";
+    } else {
+        echo "😭 DOMMAGE ! Vous avez atteint le max de " . MAX_TENTATIVES . " tentatives \n";
+    }
+    echo "La combinaison secrète était : " . $affichageSecrete . "\n";
+    echo "================================================================\n";
+
